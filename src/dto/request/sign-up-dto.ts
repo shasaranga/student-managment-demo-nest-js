@@ -1,5 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserTypes } from 'src/common/enums/user-types.enum';
+import {
+  ArrayNotEmpty,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+import { User_Role } from 'src/common/enums/roles-enum';
 
 export class SignUpDto {
   @IsNotEmpty()
@@ -14,6 +20,7 @@ export class SignUpDto {
   @IsString()
   password: string;
 
-  @IsEnum(UserTypes)
-  userType: UserTypes;
+  @ArrayNotEmpty()
+  @IsEnum(User_Role, { each: true })
+  roles: User_Role[];
 }

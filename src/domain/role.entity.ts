@@ -4,6 +4,10 @@ import UserRole from './user-role.entity';
 
 @Entity()
 export default class Role extends Domain {
+  // constructor(name: string) {
+  //   super();
+  //   this.name = name;
+  // }
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

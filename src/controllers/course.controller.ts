@@ -8,34 +8,33 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from 'src/application/services/course/course.service';
-import { Role } from 'src/common/enums/roles-enum';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { User_Role } from 'src/common/enums/roles-enum';
 import { Roles } from 'src/decorators/role.decorator';
 import { Course } from 'src/domain/course.entity';
 import { CreateCourseDto } from 'src/dto/request/create-course-dto';
 import { FilterCourseDto } from 'src/dto/request/filter-course-dto';
 import { UpdateCourseInfo } from 'src/dto/request/update-course-info-dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('course')
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CourseController {
   constructor(private courseService: CourseService) {}
 
   @Post()
+  @Roles(User_Role.ADMIN, User_Role.SUPER_ADMIN)
   async addNewCourse(
     @Body() createCourseDto: CreateCourseDto,
   ): Promise<Course> {
     return this.courseService.createCourse(createCourseDto);
   }
 
-  // getAll
-  // filters: type / model
-  @Roles(Role.ADMIN)
   @Get()
+  @Roles(User_Role.ADMIN, User_Role.SUPER_ADMIN)
   async getCourses(
     @Query() filterCourseDto: FilterCourseDto,
   ): Promise<Course[]> {
@@ -50,15 +49,15 @@ export class CourseController {
    * @returns Promise<Course>
    */
   @Get('/:id')
+  @Roles(User_Role.ADMIN, User_Role.SUPER_ADMIN)
   async getCourseById(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @GetUser() user,
   ): Promise<Course> {
-    console.log(user);
     return this.courseService.geCourseById(id);
   }
 
   @Patch('/:id')
+  @Roles(User_Role.ADMIN, User_Role.SUPER_ADMIN)
   async updateCourseInfo(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateCourseInfo: UpdateCourseInfo,
@@ -67,6 +66,7 @@ export class CourseController {
   }
 
   @Delete('/:id')
+  @Roles(User_Role.ADMIN, User_Role.SUPER_ADMIN)
   async deleteCourseById(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.courseService.deleteCourseById(id);
   }

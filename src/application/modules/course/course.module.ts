@@ -1,13 +1,18 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseService } from 'src/application/services/course/course.service';
-import { CourseRepository } from 'src/persistance/repository/course.repository';
+import { PersistanceModule } from 'src/persistance/persistance.module';
 import { CourseController } from '../../../controllers/course.controller';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CourseRepository]), AuthModule],
+  imports: [AuthModule, PersistanceModule],
   controllers: [CourseController],
-  providers: [CourseService],
+  providers: [
+    CourseService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+  ],
 })
 export class CourseModule {}

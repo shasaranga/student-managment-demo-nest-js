@@ -1,26 +1,42 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
-import { Role } from 'src/common/enums/roles-enum';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User_Role } from 'src/common/enums/roles-enum';
 import { ROLES_KEY } from 'src/decorators/role.decorator';
+import { RoleRepository } from 'src/persistance/repository/role.repository';
+import { UserRoleRepository } from 'src/persistance/repository/userRole.repository';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    @InjectRepository(RoleRepository) private roleRepository: RoleRepository,
+    @InjectRepository(UserRoleRepository)
+    private userRoleRepository: UserRoleRepository,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredRoles = this.reflector.getAllAndOverride<User_Role[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredRoles) {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    return true;
-    // return requiredRoles.some(role => user.roles?.includes(roles));
+    const userRolesIds = (
+      await this.userRoleRepository.find({
+        where: { userId: user.id },
+      })
+    ).map((userRole) => userRole.roleId);
+
+    const roleIds = await Promise.all(
+      requiredRoles.map(async (roleName) => {
+        return await this.roleRepository.getRoleIdByRoleName(roleName);
+      }),
+    );
+
+    return roleIds.some((id) => userRolesIds.includes(id));
   }
 }

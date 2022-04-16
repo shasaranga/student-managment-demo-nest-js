@@ -13,7 +13,6 @@ export class CourseRepository extends Repository<Course> {
       type,
       mode,
     });
-
     await this.save(course);
     return course;
   }

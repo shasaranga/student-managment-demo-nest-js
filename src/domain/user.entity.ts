@@ -1,7 +1,6 @@
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Course } from './course.entity';
 import { Domain } from './domain.entity';
-import { UserTypes } from 'src/common/enums/user-types.enum';
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Role } from 'src/common/enums/roles-enum';
 import UserRole from './user-role.entity';
 
 @Entity()
@@ -18,6 +17,11 @@ export class User extends Domain {
   @Column()
   password: string;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @OneToMany(() => UserRole, (userRole) => userRole.user, { cascade: true })
   userRoles: UserRole[];
+
+  //eager set to true because whenever a user is retireved it automatically
+  // retrieves the tasks related to that user
+  @OneToMany(() => Course, (course) => course.user, { eager: true })
+  courses: Course[];
 }
