@@ -1,28 +1,30 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Domain } from './domain.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { DomainEntity } from './domain.entity';
 import Role from './role.entity';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 
-@Entity()
-export default class UserRole extends Domain {
-  constructor(user: User, role: Role) {
+@Entity({ name: 'user_role' })
+export default class UserRoleEntity extends DomainEntity {
+  constructor(user: UserEntity, role: Role) {
     super();
     this.user = user;
     this.role = role;
   }
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  readonly id: string;
 
   @Column('uuid')
-  userId: string;
+  readonly userId: string;
 
   @Column('uuid')
-  roleId: string;
+  readonly roleId: string;
 
   // when user is deleted user_role record is deleted automatically
-  @ManyToOne(() => User, (user) => user.userRoles, { onDelete: 'CASCADE' })
-  user: User;
+  @ManyToOne(() => UserEntity, (userEntity) => userEntity.userRoles, {
+    onDelete: 'CASCADE',
+  })
+  readonly user: UserEntity;
 
   @ManyToOne(() => Role, (role) => role.userRoles)
-  role: Role;
+  readonly role: Role;
 }

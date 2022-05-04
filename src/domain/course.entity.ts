@@ -1,23 +1,23 @@
 import { Exclude } from 'class-transformer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Domain } from './domain.entity';
-import { User } from './user.entity';
+import { DomainEntity } from './domain.entity';
+import { UserEntity } from './user.entity';
 
-@Entity()
-export class Course extends Domain {
+@Entity({ name: 'course' })
+export class CourseEntity extends DomainEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  readonly id: string;
 
   @Column()
-  name: string;
+  readonly name: string;
 
   @Column()
-  type: string;
+  readonly type: string;
 
   @Column()
-  mode: string;
+  readonly mode: string;
 
-  @ManyToOne((_type) => User, (user) => user.courses, { eager: false })
+  @ManyToOne((_type) => UserEntity, (user) => user.courses, { eager: false })
   @Exclude({ toPlainOnly: true })
-  user: User;
+  readonly user: UserEntity;
 }

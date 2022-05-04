@@ -1,27 +1,37 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Course } from './course.entity';
-import { Domain } from './domain.entity';
+import { CourseEntity } from './course.entity';
+import { DomainEntity } from './domain.entity';
 import UserRole from './user-role.entity';
 
-@Entity()
-export class User extends Domain {
+@Entity({ name: 'user' })
+export class UserEntity extends DomainEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  readonly id: string;
 
   @Column()
-  name: string;
+  readonly name: string;
 
   @Column()
-  email: string;
+  readonly email: string;
 
   @Column()
-  password: string;
+  readonly password: string;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user, { cascade: true })
-  userRoles: UserRole[];
+  readonly userRoles: UserRole[];
 
   //eager set to true because whenever a user is retireved it automatically
   // retrieves the tasks related to that user
-  @OneToMany(() => Course, (course) => course.user, { eager: true })
-  courses: Course[];
+  @OneToMany(() => CourseEntity, (courseEntity) => courseEntity.user, {
+    eager: true,
+  })
+  readonly courses: CourseEntity[];
+
+  constructor(id: string, name: string, email: string, password: string) {
+    super();
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.password = password;
+  }
 }

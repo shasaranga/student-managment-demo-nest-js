@@ -1,9 +1,10 @@
+import { AggregateRoot } from '@nestjs/cqrs';
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export abstract class Domain {
+export abstract class DomainEntity extends AggregateRoot {
   @CreateDateColumn()
-  created: Date;
+  readonly created: Date;
 
   @UpdateDateColumn()
-  updated: Date;
+  readonly updated: Date;
 }

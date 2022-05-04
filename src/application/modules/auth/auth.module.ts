@@ -1,30 +1,46 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthController } from 'src/api/controllers/auth.controller';
+import { AuthHandlerModule } from 'src/application/commands/auth/authHandlers.module';
+import { AuthEventHandlers } from 'src/application/events/authEventHandlers.module';
 import { AuthService } from 'src/application/services/auth/auth.service';
-import { AuthController } from 'src/controllers/auth.controller';
 import { PersistanceModule } from 'src/persistance/persistance.module';
-import { RoleRepository } from 'src/persistance/repository/role.repository';
-import { UserRepository } from 'src/persistance/repository/user.repository';
-import { UserRoleRepository } from 'src/persistance/repository/userRole.repository';
 import { JwtStrategy } from './jwt-strategy';
 
+/**
+ * This module contains all the auth related componenets.
+ */
+
+const CommandHandlers = [...AuthHandlerModule];
+const EventsHandlers = [...AuthEventHandlers];
 @Module({
   imports: [
+    CqrsModule,
     PassportModule.register({
       defaultStrategy: 'jwt',
     }),
-    JwtModule.register({
-      secret: 'topSecret51',
-      signOptions: {
-        expiresIn: 3600, //1 hour
-      },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: 'topSecret51',
+        signOptions: {
+          expiresIn: configService.get<number>('JWT_EXPIRATION_SECONDS'), //1 hour
+        },
+      }),
     }),
     PersistanceModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    Logger,
+    AuthService,
+    JwtStrategy,
+    ...CommandHandlers,
+    ...EventsHandlers,
+  ],
   exports: [PassportModule, JwtStrategy],
 })
 export class AuthModule {}

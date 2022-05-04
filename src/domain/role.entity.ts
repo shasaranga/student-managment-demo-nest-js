@@ -1,9 +1,9 @@
-import { Column, PrimaryGeneratedColumn, OneToMany, Entity } from 'typeorm';
-import { Domain } from './domain.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { DomainEntity } from './domain.entity';
 import UserRole from './user-role.entity';
 
 @Entity()
-export default class Role extends Domain {
+export default class Role extends DomainEntity {
   // constructor(name: string) {
   //   super();
   //   this.name = name;

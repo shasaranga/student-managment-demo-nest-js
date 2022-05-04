@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { WinstonModule } from 'nest-winston';
+import { utilities, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { AppModule } from './application/app.module';
 
@@ -28,8 +28,22 @@ import { AppModule } from './application/app.module';
         };
       },
     }),
-    WinstonModule.forRoot({
-      transports: [new winston.transports.Console({ level: 'error' })],
+    WinstonModule.forRootAsync({
+      useFactory: () => ({
+        transports: [
+          new winston.transports.Console({ level: 'error' }),
+          new winston.transports.Console({
+            level: 'info',
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              winston.format.ms(),
+              utilities.format.nestLike('Student_Managment_API', {
+                prettyPrint: true,
+              }),
+            ),
+          }),
+        ],
+      }),
     }),
     AppModule,
   ],

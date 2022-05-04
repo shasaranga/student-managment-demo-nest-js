@@ -3,6 +3,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CourseModule } from './modules/course/course.module';
 
 @Module({
-  imports: [CourseModule, AuthModule],
+  imports: [AuthModule, CourseModule],
 })
 export class AppModule {}

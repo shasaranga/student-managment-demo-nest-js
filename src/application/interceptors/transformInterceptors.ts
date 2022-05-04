@@ -1,14 +1,14 @@
 import {
-    CallHandler,
-    ExecutionContext,
-    Injectable,
-    NestInterceptor
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
 } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { map, Observable } from 'rxjs';
 
 @Injectable()
-export class TransformerInterceptor implements NestInterceptor {
+export class TransformInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,

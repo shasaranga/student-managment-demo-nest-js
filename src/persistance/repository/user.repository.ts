@@ -1,11 +1,12 @@
-import { User } from 'src/domain/user.entity';
+import * as bcryptjs from 'bcryptjs';
+import { UserEntity } from 'src/domain/user.entity';
+
 import { SignUpDto } from 'src/dto/request/sign-up-dto';
 import { EntityRepository, Repository } from 'typeorm';
-import * as bcryptjs from 'bcryptjs';
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User> {
-  async createUser(signUpDto: SignUpDto): Promise<User> {
+@EntityRepository(UserEntity)
+export class UserRepository extends Repository<UserEntity> {
+  async createUser(signUpDto: SignUpDto): Promise<UserEntity> {
     const { name, email, password } = signUpDto;
 
     const salt = await bcryptjs.genSalt();
